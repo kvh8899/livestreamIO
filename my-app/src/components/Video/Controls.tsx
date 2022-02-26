@@ -1,4 +1,5 @@
 import { Component } from "react";
+import { renderTime } from "../utils";
 import styled from "styled-components";
 const ControlContainer = styled.div`
   position: absolute;
@@ -32,18 +33,11 @@ class Controls extends Component<Props, State> {
     return (
       <ControlContainer>
         <Play onClick={this.toggle}>Play</Play>
-        <div>{this.renderTime(this.props.time)}</div>
+        <div>{renderTime(this.props.time)}</div>
       </ControlContainer>
     );
   }
-  renderTime = (time: number) => {
-    return (
-      <>
-        {Math.floor(time / 60)}:{time % 60 < 10 ? "0" : ""}
-        {time % 60}
-      </>
-    );
-  };
+
   toggle = (e: any) => {
     const buttonText = e.target as HTMLElement;
     if (!this.state.isPlaying) {
