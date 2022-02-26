@@ -6,7 +6,7 @@ import "./App.css";
 function App() {
   return (
     <div className="App">
-      <Video />
+      <Video height={"500px"} width={"700px"} />
     </div>
   );
 }
