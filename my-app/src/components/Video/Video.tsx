@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { Component} from "react";
 import React from "react";
 import Controls from "./Controls";
 class Video extends Component<{ height: string; width: string }> {
@@ -15,14 +15,7 @@ class Video extends Component<{ height: string; width: string }> {
           width={this.props.width}
           height={this.props.height}
           muted
-          onTimeUpdate={(e) => {
-            this.setState((state) => {
-              const target = e.target as HTMLVideoElement;
-              return {
-                time: Math.floor(target.currentTime),
-              };
-            });
-          }}
+          onTimeUpdate={this.setTime}
           ref={this.video}
         >
           <source src="/api/videos" type="video/mp4"></source>
@@ -31,6 +24,14 @@ class Video extends Component<{ height: string; width: string }> {
       </div>
     );
   }
+  setTime = (e: any) => {
+    this.setState((state) => {
+      const target = e.target as HTMLVideoElement;
+      return {
+        time: Math.floor(target.currentTime),
+      };
+    });
+  };
 }
 
 export default Video;

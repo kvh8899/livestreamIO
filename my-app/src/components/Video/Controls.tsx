@@ -38,7 +38,7 @@ class Controls extends Component<Props, State> {
     );
   }
 
-  toggle = (e: any) => {
+  toggle = (e: React.MouseEvent<HTMLButtonElement>) => {
     const buttonText = e.target as HTMLElement;
     if (!this.state.isPlaying) {
       this.props.innerRef.current.play();
