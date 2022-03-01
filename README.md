@@ -1,3 +1,3 @@
 # livestreamIO
 
-A React Component library for playing video and livestreams. This is a work in progress!
+An app to upload/play videos and livestream. This is a work in progress!
