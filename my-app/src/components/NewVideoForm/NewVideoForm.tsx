@@ -79,7 +79,6 @@ class NewVideoForm extends React.Component<Props, State> {
   }
   submitHandler(event: React.FormEvent) {
     event.preventDefault();
-    console.log(this.state);
     //fetch request
     this.setState({ title: "", description: "", category: "" });
   }
