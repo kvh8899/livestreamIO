@@ -19,6 +19,10 @@ type Props = {
   time: any;
 };
 class Controls extends Component<Props, State> {
+  constructor(props: any) {
+    super(props);
+    this.toggle = this.toggle.bind(this);
+  }
   state = {
     isPlaying: false,
   };
@@ -38,7 +42,7 @@ class Controls extends Component<Props, State> {
     );
   }
 
-  toggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+  toggle(e: React.MouseEvent<HTMLButtonElement>) {
     const buttonText = e.target as HTMLElement;
     if (!this.state.isPlaying) {
       this.props.innerRef.current.play();
@@ -53,7 +57,7 @@ class Controls extends Component<Props, State> {
         isPlaying: false,
       }));
     }
-  };
+  }
 }
 
 export default Controls;

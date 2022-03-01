@@ -1,4 +1,4 @@
-import { Component} from "react";
+import { Component } from "react";
 import React from "react";
 import Controls from "./Controls";
 class Video extends Component<{ height: string; width: string }> {
@@ -6,6 +6,7 @@ class Video extends Component<{ height: string; width: string }> {
   constructor(props: any) {
     super(props);
     this.video = React.createRef();
+    this.setTime = this.setTime.bind(this);
   }
   state = { time: "0" };
   render() {
@@ -24,14 +25,14 @@ class Video extends Component<{ height: string; width: string }> {
       </div>
     );
   }
-  setTime = (e: any) => {
+  setTime(e: any) {
     this.setState((state) => {
       const target = e.target as HTMLVideoElement;
       return {
         time: Math.floor(target.currentTime),
       };
     });
-  };
+  }
 }
 
 export default Video;
