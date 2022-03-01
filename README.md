@@ -1,3 +1,8 @@
 # livestreamIO
 
-A React Component library for playing video and livestreams. This is a work in progress!
+An app to upload/play videos and livestream. This is a work in progress!
+
+Future Features:
+ - Utilize AWS S3 for Video Uploading 
+ - Livestream through your camera and screen
+ - Websockets for live chat rooms
