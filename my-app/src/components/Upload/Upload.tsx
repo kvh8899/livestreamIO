@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React from "react";
+import React, { ChangeEvent, ChangeEventHandler } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileArrowUp, faCheck } from "@fortawesome/free-solid-svg-icons";
 import { ThemeProvider } from "styled-components";
@@ -10,16 +10,25 @@ const DropZone = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-
   border-radius: 5px;
-  border: 5px lightGray dashed;
+  border: 5px #1a67f5 dashed;
 `;
 const Confirm = styled.p`
   color: ${(props) => props.theme.main};
 `;
+
+const ChooseFile = styled.label`
+  background-color: #1a67f5;
+  color: white;
+  border-radius: 25px;
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+`;
 Confirm.defaultProps = {
   theme: {
-    main: "black",
+    main: "#1A67F5",
   },
 };
 const green = {
@@ -30,7 +39,6 @@ type State = {
 };
 type Props = {
   setFile: any;
-  file: any;
 };
 class Upload extends React.Component<Props, State> {
   constructor(props: any) {
@@ -47,9 +55,24 @@ class Upload extends React.Component<Props, State> {
         onDragOver={this.onDragHandler}
       >
         {!this.state.fileName ? (
-          <p>
-            <FontAwesomeIcon icon={faFileArrowUp} /> Drag and Drop Files Here
-          </p>
+          <div>
+            <p>
+              <FontAwesomeIcon icon={faFileArrowUp} /> Drag and Drop Files Here
+            </p>
+            <p>or</p>
+            <ChooseFile htmlFor="file-upload" className="custom-file-upload">
+              <input
+                id="file-upload"
+                type="file"
+                onChange={(e) => {
+                  this.setState({ ...this.state, fileName: e.target.value });
+                  const event: HTMLInputElement = e.target;
+                  if(event.files) this.props.setFile(event.files[0]);
+                }}
+              ></input>
+              Choose File
+            </ChooseFile>
+          </div>
         ) : (
           <div>
             <ThemeProvider theme={green}>
@@ -69,7 +92,7 @@ class Upload extends React.Component<Props, State> {
     if (item.kind === "file") {
       const uploadFile: File = item.getAsFile();
       this.setState({ fileName: uploadFile.name });
-      this.props.setFile({ ...this.props.file, file: uploadFile });
+      this.props.setFile(uploadFile);
     }
   };
   onDragHandler = (event: any) => {

@@ -2,10 +2,10 @@ import React from "react";
 import styled from "styled-components";
 import Upload from "../Upload/Upload";
 const SubmitButton = styled.button`
-  height: 25px;
+  height: 35px;
   width: 100px;
   border-radius: 25px;
-  background-color: black;
+  background-color: #1a67f5;
   color: white;
   font-size: 16px;
   border: none;
@@ -50,6 +50,7 @@ class NewVideoForm extends React.Component<Props, State> {
     this.descriptionHandler = this.descriptionHandler.bind(this);
     this.categoryHandler = this.categoryHandler.bind(this);
     this.setState = this.setState.bind(this);
+    this.fileHandler = this.fileHandler.bind(this);
   }
   render() {
     return (
@@ -72,15 +73,28 @@ class NewVideoForm extends React.Component<Props, State> {
           onChange={this.categoryHandler}
           required
         ></input>
-        <Upload setFile={this.setState} file={this.state} />
+        <Upload setFile={this.fileHandler} />
         <SubmitButton>Submit</SubmitButton>
       </VideoForm>
     );
   }
-  submitHandler(event: React.FormEvent) {
+  async submitHandler(event: React.FormEvent) {
     event.preventDefault();
+    if (!this.state.file) return;
     //fetch request
-    this.setState({ title: "", description: "", category: "" });
+
+    const data = new FormData();
+    data.append("title", this.state.title);
+    data.append("description", this.state.description);
+    data.append("category", this.state.category);
+    data.append("file", this.state.file);
+
+    const options = {
+      method: "POST",
+      body: data,
+    };
+    const video = await fetch("/api/videos", options);
+    this.setState({ title: "", description: "", category: "", file: null });
   }
   titleHandler(event: React.ChangeEvent) {
     const element = event.target as HTMLInputElement;
@@ -93,6 +107,12 @@ class NewVideoForm extends React.Component<Props, State> {
   categoryHandler(event: React.ChangeEvent) {
     const element = event.target as HTMLInputElement;
     this.setState({ ...this.state, category: element.value });
+  }
+  fileHandler(file: File) {
+    this.setState({
+      ...this.state,
+      file,
+    });
   }
 }
 

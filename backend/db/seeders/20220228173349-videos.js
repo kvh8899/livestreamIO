@@ -17,6 +17,7 @@ module.exports = {
         title: "testvideo",
         description: "this is a test video",
         owner_id: 1,
+        url:"/",
         category: "testing",
         createdAt: new Date(),
         updatedAt: new Date(),

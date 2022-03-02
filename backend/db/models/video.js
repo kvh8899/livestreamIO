@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Video.belongsTo(model.User, { foreignKey: "owner_id" });
+      Video.belongsTo(models.User, { foreignKey: "owner_id" });
     }
   }
   Video.init(
@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
       title: DataTypes.STRING,
       description: DataTypes.TEXT,
       owner_id: DataTypes.INTEGER,
+      url: DataTypes.STRING,
       category: DataTypes.STRING,
     },
     {

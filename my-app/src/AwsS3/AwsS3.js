@@ -1,16 +1,16 @@
 const AWS = require("aws-sdk");
 const env = require("dotenv").config();
-const NAME_OF_BUCKET = "lsiovbucket";
-
 const multer = require("multer");
 
+const NAME_OF_BUCKET = "lsiovbucket";
+console.log(process.env);
 // required in .env file
 //  AWS_ACCESS_KEY_ID
 //  AWS_SECRET_ACCESS_KEY
 
-const s3 = new AWS.S3.ManagedUpload({ apiVersion: "2006-03-01" });
+const s3 = new AWS.S3({ apiVersion: "2006-03-01" });
 
-const singlePublicFileUpload = async (file) => {
+export const singlePublicFileUpload = async (file) => {
   const { originalname, mimetype, buffer } = await file;
   const path = require("path");
   //name of the file in your S3 bucket will be the date in ms plus the extension name
@@ -22,10 +22,15 @@ const singlePublicFileUpload = async (file) => {
     ACL: "public-read",
   };
 
-  const result = await s3.upload(uploadParams).promise();
+  const result = await s3
+    .upload(uploadParams)
+    .on("httpUploadProgress", (event) => {
+      console.log("Uploaded" + parseInt((event.loaded * 100) / event.total));
+    })
+    .promise();
 
   //save the name of the file in your bucket as the key in your databse to retrive for later
-  return {location:result.Location,};
+  return result.Location;
 };
 
 const multiplePublicFileUpload = async (files) => {
@@ -85,14 +90,3 @@ const singleMulterUpload = (nameOfKey) =>
   multer({ storage: storage }).single(nameOfKey);
 const multipleMulterUpload = (nameOfKey) =>
   multer({ storage: storage }).array(nameOfKey);
-
-module.exports = {
-  s3,
-  singlePublicFileUpload,
-  multiplePublicFileUpload,
-  singlePrivateFileUpload,
-  multiplePrivateFileUpload,
-  retrievePrivateFile,
-  singleMulterUpload,
-  multipleMulterUpload,
-};
