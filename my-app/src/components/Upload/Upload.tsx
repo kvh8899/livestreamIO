@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, { ChangeEvent, ChangeEventHandler } from "react";
+import * as React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileArrowUp, faCheck } from "@fortawesome/free-solid-svg-icons";
 import { ThemeProvider } from "styled-components";
@@ -67,7 +67,7 @@ class Upload extends React.Component<Props, State> {
                 onChange={(e) => {
                   this.setState({ ...this.state, fileName: e.target.value });
                   const event: HTMLInputElement = e.target;
-                  if(event.files) this.props.setFile(event.files[0]);
+                  if (event.files) this.props.setFile(event.files[0]);
                 }}
               ></input>
               Choose File

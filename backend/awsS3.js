@@ -8,7 +8,7 @@ const multer = require("multer");
 //  AWS_ACCESS_KEY_ID
 //  AWS_SECRET_ACCESS_KEY
 
-const s3 = new AWS.S3.ManagedUpload({ apiVersion: "2006-03-01" });
+const s3 = new AWS.S3({ apiVersion: "2006-03-01" });
 
 const singlePublicFileUpload = async (file) => {
   const { originalname, mimetype, buffer } = await file;

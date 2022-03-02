@@ -14,12 +14,11 @@ videoRouter.post(
   "/",
   singleMulterUpload("file"),
   asyncHandler(async (req, res) => {
-    const videoUrl = await singlePublicFileUpload(req.file);
-    const { title, description, category } = req.body;
+    const { title, description, category, url } = req.body;
     const video = await Video.create({
       title,
       description,
-      url: videoUrl,
+      url,
       owner_id: 1,
       category,
       createdAt: new Date(),

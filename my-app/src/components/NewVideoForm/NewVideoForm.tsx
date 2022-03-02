@@ -34,6 +34,7 @@ type State = {
   description: string;
   category: string;
   file: any;
+  isUploading: boolean;
 };
 type Props = {};
 class NewVideoForm extends React.Component<Props, State> {
@@ -44,6 +45,7 @@ class NewVideoForm extends React.Component<Props, State> {
       description: "",
       category: "",
       file: null,
+      isUploading: false,
     };
     this.submitHandler = this.submitHandler.bind(this);
     this.titleHandler = this.titleHandler.bind(this);
@@ -73,6 +75,7 @@ class NewVideoForm extends React.Component<Props, State> {
           onChange={this.categoryHandler}
           required
         ></input>
+        {this.state.isUploading ? <div>LOADING</div> : ""}
         <Upload setFile={this.fileHandler} />
         <SubmitButton>Submit</SubmitButton>
       </VideoForm>
@@ -93,7 +96,12 @@ class NewVideoForm extends React.Component<Props, State> {
       method: "POST",
       body: data,
     };
-    const video = await fetch("/api/videos", options);
+    this.setState({ ...this.state, isUploading: true });
+    const video = fetch("/api/videos", options)
+      .then((res) => res.json())
+      .then((res) => {
+        this.setState({ ...this.state, isUploading: false });
+      });
     this.setState({ title: "", description: "", category: "", file: null });
   }
   titleHandler(event: React.ChangeEvent) {
