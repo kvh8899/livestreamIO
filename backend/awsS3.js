@@ -25,7 +25,7 @@ const singlePublicFileUpload = async (file) => {
   const result = await s3.upload(uploadParams).promise();
 
   //save the name of the file in your bucket as the key in your databse to retrive for later
-  return {location:result.Location,};
+  return result.Location;
 };
 
 const multiplePublicFileUpload = async (files) => {

@@ -3,6 +3,7 @@ import * as React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileArrowUp, faCheck } from "@fortawesome/free-solid-svg-icons";
 import { ThemeProvider } from "styled-components";
+import SpinningCircle from "../LoadingAnimations/SpinningCircle";
 const DropZone = styled.div`
   box-sizing: border-box;
   height: 300px;
@@ -11,14 +12,14 @@ const DropZone = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: 5px;
-  border: 5px #1a67f5 dashed;
+  border: 5px lightgray dashed;
 `;
 const Confirm = styled.p`
   color: ${(props) => props.theme.main};
 `;
 
 const ChooseFile = styled.label`
-  background-color: #1a67f5;
+  background-color: black;
   color: white;
   border-radius: 25px;
   display: inline-block;
@@ -39,6 +40,7 @@ type State = {
 };
 type Props = {
   setFile: any;
+  isUploading: boolean;
 };
 class Upload extends React.Component<Props, State> {
   constructor(props: any) {
@@ -54,34 +56,39 @@ class Upload extends React.Component<Props, State> {
         onDrop={this.onDropHandler}
         onDragOver={this.onDragHandler}
       >
-        {!this.state.fileName ? (
-          <div>
-            <p>
-              <FontAwesomeIcon icon={faFileArrowUp} /> Drag and Drop Files Here
-            </p>
-            <p>or</p>
-            <ChooseFile htmlFor="file-upload" className="custom-file-upload">
-              <input
-                id="file-upload"
-                type="file"
-                onChange={(e) => {
-                  this.setState({ ...this.state, fileName: e.target.value });
-                  const event: HTMLInputElement = e.target;
-                  if (event.files) this.props.setFile(event.files[0]);
-                }}
-              ></input>
-              Choose File
-            </ChooseFile>
-          </div>
+        {!this.props.isUploading ? (
+          !this.state.fileName ? (
+            <div>
+              <p>
+                <FontAwesomeIcon icon={faFileArrowUp} /> Drag and Drop Files
+                Here
+              </p>
+              <p>or</p>
+              <ChooseFile htmlFor="file-upload" className="custom-file-upload">
+                <input
+                  id="file-upload"
+                  type="file"
+                  onChange={(e) => {
+                    this.setState({ ...this.state, fileName: e.target.value });
+                    const event: HTMLInputElement = e.target;
+                    if (event.files) this.props.setFile(event.files[0]);
+                  }}
+                ></input>
+                Choose File
+              </ChooseFile>
+            </div>
+          ) : (
+            <div>
+              <ThemeProvider theme={green}>
+                <Confirm>
+                  <FontAwesomeIcon icon={faCheck} />
+                </Confirm>
+              </ThemeProvider>
+              <Confirm>{this.state.fileName}</Confirm>
+            </div>
+          )
         ) : (
-          <div>
-            <ThemeProvider theme={green}>
-              <Confirm>
-                <FontAwesomeIcon icon={faCheck} />
-              </Confirm>
-            </ThemeProvider>
-            <Confirm>{this.state.fileName}</Confirm>
-          </div>
+          <SpinningCircle></SpinningCircle>
         )}
       </DropZone>
     );

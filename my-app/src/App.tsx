@@ -1,11 +1,12 @@
 import React from "react";
 import NewVideoForm from "./components/NewVideoForm/NewVideoForm";
+import Video from "./components/Video/Video";
 import "./App.css";
 
 function App() {
   return (
     <div className="App">
-      <NewVideoForm />
+      <Video height={"400px"} width={"700px"} />
     </div>
   );
 }

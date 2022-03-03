@@ -40,3 +40,6 @@
 input[type="file"] {
   display: none;
 }
+:root {
+  --text-color: red;
+}
