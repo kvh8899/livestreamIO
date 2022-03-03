@@ -102,6 +102,11 @@ class Controls extends Component<Props, State> {
           onMouseUp={(e) => {
             this.setState({ ...this.state, isDrag: false });
             //set video playback to correct time
+            const bar = this.progressBar.current;
+            if (bar) console.log((e.clientX / 685) * 12);
+            this.props.innerRef.current.currentTime = Math.ceil(
+              (e.clientX / 685) * 12
+            );
           }}
         >
           <div
