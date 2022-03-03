@@ -1,8 +1,8 @@
 import { Component } from "react";
 import { renderTime } from "../utils";
 import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPause, faPlay } from "@fortawesome/free-solid-svg-icons";
+import PlayButton from "../Button/PlayButton";
+import ReplayButton from "../Button/ReplayButton";
 import React from "react";
 const ControlContainer = styled.div`
   color: white;
@@ -28,14 +28,6 @@ const ControlContainer = styled.div`
     rgba(0, 0, 0, 0.02) 98%,
     rgba(0, 0, 0, 0.01) 100%
   );
-`;
-const Play = styled.button`
-  border: none;
-  background-color: transparent;
-  height: 50px;
-  width: 50px;
-  cursor: pointer;
-  transition: 1s;
 `;
 const InnerControls = styled.div`
   display: flex;
@@ -64,7 +56,7 @@ class Controls extends Component<Props, State> {
   private progressBar: React.RefObject<HTMLDivElement>;
   constructor(props: any) {
     super(props);
-    this.toggle = this.toggle.bind(this);
+    this.setPlayingToggle = this.setPlayingToggle.bind(this);
     this.progressButton = React.createRef();
     this.progressBar = React.createRef();
   }
@@ -100,11 +92,12 @@ class Controls extends Component<Props, State> {
             if (bar) bar.style.width = e.clientX - 15 + "px";
           }}
           onMouseUp={(e) => {
-            this.setState({ ...this.state, isDrag: false });
             //set video playback to correct time
             this.props.innerRef.current.currentTime = Math.ceil(
               (e.clientX / 685) * 12
             );
+            this.setState({ ...this.state, isDrag: false, isPlaying: true });
+            this.props.innerRef.current.play();
           }}
         >
           <div
@@ -131,38 +124,27 @@ class Controls extends Component<Props, State> {
           </div>
         </Progress>
         <InnerControls>
-          <Play onClick={this.toggle}>
-            {!this.state.isPlaying ? (
-              <FontAwesomeIcon icon={faPlay} style={{ color: "white" }} />
-            ) : (
-              <FontAwesomeIcon icon={faPause} style={{ color: "white" }} />
-            )}
-          </Play>
+          {Math.floor(this.props.innerRef.current?.currentTime) ===
+          Math.floor(this.props.innerRef.current?.duration) ? (
+            <ReplayButton
+              setPlaying={this.setPlayingToggle}
+              innerRef={this.props.innerRef}
+            />
+          ) : (
+            <PlayButton
+              setPlaying={this.setPlayingToggle}
+              isPlaying={this.state.isPlaying}
+              innerRef={this.props.innerRef}
+            />
+          )}
+
           <div>{renderTime(this.props.time)}</div>
         </InnerControls>
       </ControlContainer>
     );
   }
-
-  toggle(e: React.MouseEvent<HTMLButtonElement>) {
-    if (!this.state.isPlaying) {
-      this.props.innerRef.current.play();
-      this.setState((state) => ({
-        isPlaying: true,
-      }));
-    } else if (this.state.isPlaying) {
-      this.props.innerRef.current.pause();
-      this.setState((state) => ({
-        isPlaying: false,
-      }));
-    }
-  }
-  returnElement(): any {
-    return (
-      <div>
-        <FontAwesomeIcon icon={faPause} />
-      </div>
-    );
+  setPlayingToggle() {
+    this.setState({ ...this.state, isPlaying: !this.state.isPlaying });
   }
 }
 
