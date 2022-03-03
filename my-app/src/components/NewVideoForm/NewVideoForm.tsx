@@ -5,7 +5,7 @@ const SubmitButton = styled.button`
   height: 35px;
   width: 100px;
   border-radius: 25px;
-  background-color: #1a67f5;
+  background-color: black;
   color: white;
   font-size: 16px;
   border: none;
@@ -28,6 +28,13 @@ const VideoForm = styled.form`
     margin-top: 20px;
     width: 100%;
   }
+`;
+const UploadWrapper = styled.div`
+  height: 300px;
+  width: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 type State = {
   title: string;
@@ -75,8 +82,12 @@ class NewVideoForm extends React.Component<Props, State> {
           onChange={this.categoryHandler}
           required
         ></input>
-        {this.state.isUploading ? <div>LOADING</div> : ""}
-        <Upload setFile={this.fileHandler} />
+        <UploadWrapper>
+          <Upload
+            setFile={this.fileHandler}
+            isUploading={this.state.isUploading}
+          />
+        </UploadWrapper>
         <SubmitButton>Submit</SubmitButton>
       </VideoForm>
     );
@@ -101,8 +112,9 @@ class NewVideoForm extends React.Component<Props, State> {
       .then((res) => res.json())
       .then((res) => {
         this.setState({ ...this.state, isUploading: false });
-      });
-    this.setState({ title: "", description: "", category: "", file: null });
+        this.setState({ title: "", description: "", category: "", file: null });
+      })
+      .catch((error) => console.log(error));
   }
   titleHandler(event: React.ChangeEvent) {
     const element = event.target as HTMLInputElement;
