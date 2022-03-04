@@ -42,14 +42,18 @@ const Progress = styled.div`
   height: 3px;
   display: flex;
   justify-content: flex-start;
+  user-select: none;
 `;
 type State = {
   isPlaying: boolean;
-  isDrag: boolean;
 };
 type Props = {
   innerRef: any;
   time: any;
+  isDrag: boolean;
+  setDragFalse: any;
+  setDragTrue: any;
+  controlShow: any;
 };
 class Controls extends Component<Props, State> {
   private progressButton: React.RefObject<HTMLDivElement>;
@@ -62,7 +66,6 @@ class Controls extends Component<Props, State> {
   }
   state = {
     isPlaying: false,
-    isDrag: false,
   };
 
   render() {
@@ -76,45 +79,58 @@ class Controls extends Component<Props, State> {
             element.style.cursor = "pointer";
           }}
           onMouseLeave={(e) => {
-            if (!this.state.isDrag)
+            if (!this.props.isDrag)
               this.progressButton.current?.classList.remove("hideProgress");
             const element = e.currentTarget as HTMLElement;
             element.style.height = "3px";
           }}
           onMouseDown={(e) => {
-            this.setState({ ...this.state, isDrag: true });
+            //use propsetter
+            this.props.setDragTrue();
             this.props.innerRef.current.pause();
             const bar = this.progressBar.current;
             if (bar) bar.style.width = e.clientX - 15 + "px";
           }}
           onMouseMove={(e) => {
-            if (!this.state.isDrag) return;
+            let width = (e.clientX / 685) * 12;
+            let bar = this.progressBar.current;
+
+            if (!this.props.isDrag) return;
             this.props.innerRef.current.pause();
-            const bar = this.progressBar.current;
-            if (bar) bar.style.width = e.clientX - 15 + "px";
-            this.props.innerRef.current.currentTime = Math.ceil(
-              (e.clientX / 685) * 12
-            );
+
+            if (bar && e.clientX - 15 <= 685)
+              bar.style.width = e.clientX - 15 + "px";
+            this.props.innerRef.current.currentTime = Math.ceil(width);
+
             window.addEventListener("mouseup", (e) => {
-              this.setState({ ...this.state, isDrag: false, isPlaying: true });
-              this.props.innerRef.current.play();
+              let current = this.props.controlShow.current;
+              let currentTime = this.props.innerRef.current.currentTime;
+              let duration = this.props.innerRef.current.duration;
+              this.setState({ ...this.state, isPlaying: true });
+              if (current) current.classList.remove("displayControls");
+              this.props.setDragFalse();
+              if (currentTime <= duration) this.props.innerRef.current.play();
             });
             window.addEventListener("mousemove", (e) => {
-              if (!this.state.isDrag) return;
+              let width = (e.clientX / 685) * 12;
+              let duration = this.props.innerRef.current.duration;
+              let bar = this.progressBar.current;
+  
+              if (!this.props.isDrag) return;
               this.props.innerRef.current.pause();
-              const bar = this.progressBar.current;
-              if (bar) bar.style.width = e.clientX - 15 + "px";
-              this.props.innerRef.current.currentTime = Math.ceil(
-                (e.clientX / 685) * 12
-              );
+              if (width <= duration)
+                this.props.innerRef.current.currentTime = width;
+              if (bar && e.clientX - 15 <= 685)
+                bar.style.width = e.clientX - 15 + "px";
             });
           }}
           onMouseUp={(e) => {
+            let width = (e.clientX / 685) * 12;
             //set video playback to correct time
-            this.setState({ ...this.state, isDrag: false, isPlaying: true });
-            this.props.innerRef.current.currentTime = Math.ceil(
-              (e.clientX / 685) * 12
-            );
+            this.setState({ ...this.state, isPlaying: true });
+            this.props.setDragFalse();
+            if (width <= 685) this.props.innerRef.current.currentTime = width;
+
             this.props.innerRef.current.play();
           }}
         >
@@ -142,8 +158,8 @@ class Controls extends Component<Props, State> {
           </div>
         </Progress>
         <InnerControls>
-          {Math.floor(this.props.innerRef.current?.currentTime) ===
-          Math.floor(this.props.innerRef.current?.duration) ? (
+          {this.props.innerRef.current?.currentTime ===
+          this.props.innerRef.current?.duration ? (
             <ReplayButton
               setPlaying={this.setPlayingToggle}
               innerRef={this.props.innerRef}

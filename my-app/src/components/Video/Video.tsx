@@ -18,8 +18,10 @@ class Video extends Component<{ height: string; width: string }> {
     this.video = React.createRef();
     this.controlShow = React.createRef();
     this.setTime = this.setTime.bind(this);
+    this.setDragFalse = this.setDragFalse.bind(this);
+    this.setDragTrue = this.setDragTrue.bind(this);
   }
-  state = { time: "0" };
+  state = { time: "0", isDrag: false };
   render() {
     return (
       <div
@@ -33,8 +35,14 @@ class Video extends Component<{ height: string; width: string }> {
           if (current) current.classList.add("displayControls");
         }}
         onMouseLeave={(e) => {
+          if (this.state.isDrag) return;
           let current = this.controlShow.current;
           if (current) current.classList.remove("displayControls");
+        }}
+        onMouseUp={(e) => {
+          e.stopPropagation();
+          if(this.state.isDrag) this.video.current?.play();
+          this.setDragFalse();
         }}
       >
         <video
@@ -50,7 +58,14 @@ class Video extends Component<{ height: string; width: string }> {
           <source src="/api/videos" type="video/mp4"></source>
         </video>
         <ControlWrapper ref={this.controlShow}>
-          <Controls innerRef={this.video} time={this.state.time} />
+          <Controls
+            innerRef={this.video}
+            time={this.state.time}
+            isDrag={this.state.isDrag}
+            setDragFalse={this.setDragFalse}
+            setDragTrue={this.setDragTrue}
+            controlShow={this.controlShow}
+          />
         </ControlWrapper>
       </div>
     );
@@ -60,6 +75,12 @@ class Video extends Component<{ height: string; width: string }> {
     this.setState({
       time: Math.floor(target.currentTime),
     });
+  }
+  setDragFalse() {
+    this.setState({ ...this.state, isDrag: false });
+  }
+  setDragTrue() {
+    this.setState({ ...this.state, isDrag: true });
   }
 }
 
