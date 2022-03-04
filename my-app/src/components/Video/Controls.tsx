@@ -83,20 +83,38 @@ class Controls extends Component<Props, State> {
           }}
           onMouseDown={(e) => {
             this.setState({ ...this.state, isDrag: true });
+            this.props.innerRef.current.pause();
             const bar = this.progressBar.current;
             if (bar) bar.style.width = e.clientX - 15 + "px";
           }}
           onMouseMove={(e) => {
             if (!this.state.isDrag) return;
+            this.props.innerRef.current.pause();
             const bar = this.progressBar.current;
             if (bar) bar.style.width = e.clientX - 15 + "px";
-          }}
-          onMouseUp={(e) => {
-            //set video playback to correct time
             this.props.innerRef.current.currentTime = Math.ceil(
               (e.clientX / 685) * 12
             );
+            window.addEventListener("mouseup", (e) => {
+              this.setState({ ...this.state, isDrag: false, isPlaying: true });
+              this.props.innerRef.current.play();
+            });
+            window.addEventListener("mousemove", (e) => {
+              if (!this.state.isDrag) return;
+              this.props.innerRef.current.pause();
+              const bar = this.progressBar.current;
+              if (bar) bar.style.width = e.clientX - 15 + "px";
+              this.props.innerRef.current.currentTime = Math.ceil(
+                (e.clientX / 685) * 12
+              );
+            });
+          }}
+          onMouseUp={(e) => {
+            //set video playback to correct time
             this.setState({ ...this.state, isDrag: false, isPlaying: true });
+            this.props.innerRef.current.currentTime = Math.ceil(
+              (e.clientX / 685) * 12
+            );
             this.props.innerRef.current.play();
           }}
         >

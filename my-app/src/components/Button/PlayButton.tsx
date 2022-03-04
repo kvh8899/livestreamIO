@@ -24,7 +24,7 @@ class PlayButton extends Component<Props> {
 
   render(): ReactNode {
     return (
-      <Play onClick={this.toggle}>
+      <Play onMouseUp={this.toggle}>
         {!this.props.isPlaying ? (
           <FontAwesomeIcon icon={faPlay} style={{ color: "white" }} />
         ) : (
@@ -34,6 +34,7 @@ class PlayButton extends Component<Props> {
     );
   }
   toggle(e: React.MouseEvent<HTMLButtonElement>) {
+    e.stopPropagation();
     if (!this.props.isPlaying) {
       this.props.innerRef.current.play();
     } else if (this.props.isPlaying) {

@@ -1,12 +1,22 @@
 import { Component } from "react";
 import React from "react";
 import Controls from "./Controls";
+import styled from "styled-components";
 
+const ControlWrapper = styled.div`
+  opacity: 0;
+  transition: 0.3s;
+  &.displayControls {
+    opacity: 1;
+  }
+`;
 class Video extends Component<{ height: string; width: string }> {
   private video: React.RefObject<HTMLVideoElement>;
+  private controlShow: React.RefObject<HTMLDivElement>;
   constructor(props: any) {
     super(props);
     this.video = React.createRef();
+    this.controlShow = React.createRef();
     this.setTime = this.setTime.bind(this);
   }
   state = { time: "0" };
@@ -18,8 +28,13 @@ class Video extends Component<{ height: string; width: string }> {
           width: this.props.width,
           position: "relative",
         }}
-        onMouseMove={(e) => {
-          
+        onMouseOver={(e) => {
+          let current = this.controlShow.current;
+          if (current) current.classList.add("displayControls");
+        }}
+        onMouseLeave={(e) => {
+          let current = this.controlShow.current;
+          if (current) current.classList.remove("displayControls");
         }}
       >
         <video
@@ -34,7 +49,9 @@ class Video extends Component<{ height: string; width: string }> {
         >
           <source src="/api/videos" type="video/mp4"></source>
         </video>
-        <Controls innerRef={this.video} time={this.state.time} />
+        <ControlWrapper ref={this.controlShow}>
+          <Controls innerRef={this.video} time={this.state.time} />
+        </ControlWrapper>
       </div>
     );
   }
