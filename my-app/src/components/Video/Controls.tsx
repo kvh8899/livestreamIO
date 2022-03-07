@@ -46,6 +46,7 @@ const Progress = styled.div`
 `;
 type State = {
   isPlaying: boolean;
+  xPosition: number;
 };
 type Props = {
   innerRef: any;
@@ -61,13 +62,23 @@ class Controls extends Component<Props, State> {
   constructor(props: any) {
     super(props);
     this.setPlayingToggle = this.setPlayingToggle.bind(this);
+    this.windowMouseMove = this.windowMouseMove.bind(this);
+    this.windowMouseUp = this.windowMouseUp.bind(this);
     this.progressButton = React.createRef();
     this.progressBar = React.createRef();
   }
   state = {
     isPlaying: false,
+    xPosition: 0,
   };
-
+  componentDidMount() {
+    window.addEventListener("mouseup", this.windowMouseUp);
+    window.addEventListener("mousemove", this.windowMouseMove);
+  }
+  componentWillUnmount() {
+    window.removeEventListener("mouseup", this.windowMouseUp);
+    window.removeEventListener("mousemove", this.windowMouseMove);
+  }
   render() {
     return (
       <ControlContainer>
@@ -85,11 +96,17 @@ class Controls extends Component<Props, State> {
             element.style.height = "3px";
           }}
           onMouseDown={(e) => {
-            //use propsetter
-            this.props.setDragTrue();
             this.props.innerRef.current.pause();
-            const bar = this.progressBar.current;
+            let width = (e.clientX / 685) * 12;
+            let bar = this.progressBar.current;
+
+            this.props.innerRef.current.currentTime = width;
             if (bar) bar.style.width = e.clientX - 15 + "px";
+            this.setState({
+              ...this.state,
+              xPosition: e.clientX - 15,
+            });
+            this.props.setDragTrue();
           }}
           onMouseMove={(e) => {
             let width = (e.clientX / 685) * 12;
@@ -100,34 +117,12 @@ class Controls extends Component<Props, State> {
 
             if (bar && e.clientX - 15 <= 685)
               bar.style.width = e.clientX - 15 + "px";
-            this.props.innerRef.current.currentTime = Math.ceil(width);
-
-            window.addEventListener("mouseup", (e) => {
-              let current = this.props.controlShow.current;
-              let currentTime = this.props.innerRef.current.currentTime;
-              let duration = this.props.innerRef.current.duration;
-              this.setState({ ...this.state, isPlaying: true });
-              if (current) current.classList.remove("displayControls");
-              this.props.setDragFalse();
-              if (currentTime <= duration) this.props.innerRef.current.play();
-            });
-            window.addEventListener("mousemove", (e) => {
-              let width = (e.clientX / 685) * 12;
-              let duration = this.props.innerRef.current.duration;
-              let bar = this.progressBar.current;
-  
-              if (!this.props.isDrag) return;
-              this.props.innerRef.current.pause();
-              if (width <= duration)
-                this.props.innerRef.current.currentTime = width;
-              if (bar && e.clientX - 15 <= 685)
-                bar.style.width = e.clientX - 15 + "px";
-            });
+            this.props.innerRef.current.currentTime = width;
           }}
           onMouseUp={(e) => {
             let width = (e.clientX / 685) * 12;
             //set video playback to correct time
-            this.setState({ ...this.state, isPlaying: true });
+            this.setState({ ...this.state, isPlaying: true, xPosition: width });
             this.props.setDragFalse();
             if (width <= 685) this.props.innerRef.current.currentTime = width;
 
@@ -137,15 +132,18 @@ class Controls extends Component<Props, State> {
           <div
             style={{
               backgroundColor: "red",
-              width: `${
-                !(
-                  this.props.time ===
-                  Math.floor(this.props.innerRef.current?.duration)
-                )
-                  ? (this.props.time / this.props.innerRef.current?.duration) *
-                    100
-                  : "100"
-              }%`,
+              width: !this.props.isDrag
+                ? `${
+                    !(
+                      this.props.time ===
+                      Math.floor(this.props.innerRef.current?.duration)
+                    )
+                      ? (this.props.time /
+                          this.props.innerRef.current?.duration) *
+                        685
+                      : "685"
+                  }px`
+                : `${this.state.xPosition}px`,
               height: "100%",
               display: "flex",
               justifyContent: "flex-end",
@@ -171,14 +169,34 @@ class Controls extends Component<Props, State> {
               innerRef={this.props.innerRef}
             />
           )}
-
-          <div>{renderTime(this.props.time)}</div>
+          <div>{renderTime(Math.floor(this.props.time))}</div>
         </InnerControls>
       </ControlContainer>
     );
   }
   setPlayingToggle() {
     this.setState({ ...this.state, isPlaying: !this.state.isPlaying });
+  }
+
+  windowMouseMove(e: MouseEvent) {
+    let width = (e.clientX / 685) * 12;
+    let duration = this.props.innerRef.current.duration;
+    let bar = this.progressBar.current;
+
+    if (!this.props.isDrag) return;
+    this.props.innerRef.current.pause();
+    if (width <= duration) this.props.innerRef.current.currentTime = width;
+    if (bar && e.clientX - 15 <= 685) bar.style.width = e.clientX - 15 + "px";
+  }
+  windowMouseUp(e: MouseEvent) {
+    let current = this.props.controlShow.current;
+    let currentTime = this.props.innerRef.current.currentTime;
+    let duration = this.props.innerRef.current.duration;
+    this.setState({ ...this.state, isPlaying: true });
+    if (current) current.classList.remove("displayControls");
+    if (currentTime <= duration && this.props.isDrag)
+      this.props.innerRef.current.play();
+    this.props.setDragFalse();
   }
 }
 

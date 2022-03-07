@@ -73,7 +73,7 @@ class Video extends Component<{ height: string; width: string }> {
   setTime(e: any) {
     const target = e.target as HTMLVideoElement;
     this.setState({
-      time: Math.floor(target.currentTime),
+      time: target.currentTime,
     });
   }
   setDragFalse() {
