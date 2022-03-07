@@ -8,7 +8,6 @@ type Props = {
   isPlaying: boolean;
   setPlaying: any;
   isDrag: boolean;
-  setDragFalse: any;
   setPlayingTrue: any;
 };
 const Play = styled.button`
@@ -39,17 +38,8 @@ class PlayButton extends Component<Props> {
   toggle(e: React.MouseEvent<HTMLButtonElement>) {
     e.stopPropagation();
     if (this.props.isDrag) {
-      //set isDrag to false
-      this.props.setDragFalse();
-      //play video
-      this.props.innerRef.current.play();
       this.props.setPlayingTrue();
       return;
-    }
-    if (!this.props.isPlaying) {
-      this.props.innerRef.current.play();
-    } else if (this.props.isPlaying) {
-      this.props.innerRef.current.pause();
     }
     this.props.setPlaying();
   }

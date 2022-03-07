@@ -6,6 +6,10 @@ import styled from "styled-components";
 const ControlWrapper = styled.div`
   opacity: 0;
   transition: 0.3s;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  position: absolute;
   &.displayControls {
     opacity: 1;
   }
@@ -41,7 +45,7 @@ class Video extends Component<{ height: string; width: string }> {
         }}
         onMouseUp={(e) => {
           e.stopPropagation();
-          if(this.state.isDrag) this.video.current?.play();
+          if (this.state.isDrag) this.video.current?.play();
           this.setDragFalse();
         }}
       >
