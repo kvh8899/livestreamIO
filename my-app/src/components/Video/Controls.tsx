@@ -62,6 +62,7 @@ class Controls extends Component<Props, State> {
   constructor(props: any) {
     super(props);
     this.setPlayingToggle = this.setPlayingToggle.bind(this);
+    this.setPlayingTrue = this.setPlayingTrue.bind(this);
     this.windowMouseMove = this.windowMouseMove.bind(this);
     this.windowMouseUp = this.windowMouseUp.bind(this);
     this.progressButton = React.createRef();
@@ -165,8 +166,11 @@ class Controls extends Component<Props, State> {
           ) : (
             <PlayButton
               setPlaying={this.setPlayingToggle}
+              setPlayingTrue={this.setPlayingTrue}
               isPlaying={this.state.isPlaying}
               innerRef={this.props.innerRef}
+              isDrag={this.props.isDrag}
+              setDragFalse={this.props.setDragFalse}
             />
           )}
           <div>{renderTime(Math.floor(this.props.time))}</div>
@@ -176,6 +180,9 @@ class Controls extends Component<Props, State> {
   }
   setPlayingToggle() {
     this.setState({ ...this.state, isPlaying: !this.state.isPlaying });
+  }
+  setPlayingTrue() {
+    this.setState({ ...this.state, isPlaying: true });
   }
 
   windowMouseMove(e: MouseEvent) {
