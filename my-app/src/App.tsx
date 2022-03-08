@@ -5,8 +5,7 @@ import "./App.css";
 function App() {
   return (
     <div className="App">
-      <Video height={"400px"} width={"700px"} />
-      <svg className="bigPlayButton"></svg>
+      <Video height={"388px"} width={"700px"} />
     </div>
   );
 }

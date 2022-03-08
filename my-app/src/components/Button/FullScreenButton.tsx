@@ -5,13 +5,20 @@ import VideoControlButton from "./VideoControlButton";
 
 type Props = {
   video: any;
+  setFullScreen: VoidFunction;
 };
 class FullScreenButton extends Component<Props> {
   constructor(props: any) {
     super(props);
     this.toggleFullScreen = this.toggleFullScreen.bind(this);
+    this.fullScreenChanger = this.fullScreenChanger.bind(this);
   }
-
+  componentDidMount() {
+    document.addEventListener("fullscreenchange", this.fullScreenChanger);
+  }
+  componentWillUnmount() {
+    document.removeEventListener("fullscreenchange", this.fullScreenChanger);
+  }
   render(): ReactNode {
     return (
       <VideoControlButton
@@ -31,6 +38,9 @@ class FullScreenButton extends Component<Props> {
         document.exitFullscreen();
       }
     }
+  }
+  fullScreenChanger(): void {
+    this.props.setFullScreen();
   }
 }
 

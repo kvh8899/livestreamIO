@@ -24,14 +24,19 @@ class Video extends Component<{ height: string; width: string }> {
     this.setTime = this.setTime.bind(this);
     this.setDragFalse = this.setDragFalse.bind(this);
     this.setDragTrue = this.setDragTrue.bind(this);
+    this.setFullScreenState = this.setFullScreenState.bind(this);
   }
-  state = { time: 0, isDrag: false };
+  state = {
+    time: 0,
+    isDrag: false,
+    isFullScreen: false,
+  };
   render() {
     return (
       <div
         style={{
-          height: this.props.height,
-          width: this.props.width,
+          width: !this.state.isFullScreen ? `${this.props.width}` : "100%",
+          height: !this.state.isFullScreen ? `${this.props.height}` : "100%",
           position: "relative",
         }}
         onMouseOver={(e) => {
@@ -41,7 +46,7 @@ class Video extends Component<{ height: string; width: string }> {
         onMouseLeave={(e) => {
           if (this.state.isDrag) return;
           let current = this.controlShow.current;
-          if (current) current.classList.remove("displayControls");
+          
         }}
         onMouseUp={(e) => {
           e.stopPropagation();
@@ -50,8 +55,8 @@ class Video extends Component<{ height: string; width: string }> {
         }}
       >
         <video
-          width={this.props.width}
-          height={this.props.height}
+          width={!this.state.isFullScreen ? this.props.width : "100%"}
+          height={!this.state.isFullScreen ? this.props.height : "100%"}
           muted
           onTimeUpdate={this.setTime}
           ref={this.video}
@@ -69,22 +74,28 @@ class Video extends Component<{ height: string; width: string }> {
             setDragFalse={this.setDragFalse}
             setDragTrue={this.setDragTrue}
             controlShow={this.controlShow}
+            isFullScreen={this.state.isFullScreen}
+            setFullScreen={this.setFullScreenState}
           />
         </ControlWrapper>
       </div>
     );
   }
-  setTime(e: SyntheticEvent) {
+  setTime(e: SyntheticEvent): void {
     const target = e.target as HTMLVideoElement;
     this.setState({
       time: target.currentTime,
     });
   }
-  setDragFalse() {
+  setDragFalse(): void {
     this.setState({ ...this.state, isDrag: false });
   }
-  setDragTrue() {
+  setDragTrue(): void {
     this.setState({ ...this.state, isDrag: true });
+  }
+
+  setFullScreenState(): void {
+    this.setState({ ...this.state, isFullScreen: !this.state.isFullScreen });
   }
 }
 
