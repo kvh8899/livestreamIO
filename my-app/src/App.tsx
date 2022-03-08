@@ -1,5 +1,4 @@
 import React from "react";
-import NewVideoForm from "./components/NewVideoForm/NewVideoForm";
 import Video from "./components/Video/Video";
 import "./App.css";
 

@@ -39,7 +39,7 @@ type State = {
   fileName: string;
 };
 type Props = {
-  setFile: any;
+  setFile: Function;
   isUploading: boolean;
 };
 class Upload extends React.Component<Props, State> {
