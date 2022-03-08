@@ -92,7 +92,7 @@ class NewVideoForm extends React.Component<Props, State> {
       </VideoForm>
     );
   }
-  async submitHandler(event: React.FormEvent) {
+  async submitHandler(event: React.FormEvent): Promise<any> {
     event.preventDefault();
     if (!this.state.file) return;
     //fetch request
@@ -108,7 +108,7 @@ class NewVideoForm extends React.Component<Props, State> {
       body: data,
     };
     this.setState({ ...this.state, isUploading: true });
-    const video = fetch("/api/videos", options)
+    fetch("/api/videos", options)
       .then((res) => res.json())
       .then((res) => {
         this.setState({ ...this.state, isUploading: false });
@@ -116,15 +116,15 @@ class NewVideoForm extends React.Component<Props, State> {
       })
       .catch((error) => console.log(error));
   }
-  titleHandler(event: React.ChangeEvent) {
+  titleHandler(event: React.ChangeEvent): void {
     const element = event.target as HTMLInputElement;
     this.setState({ ...this.state, title: element.value });
   }
-  descriptionHandler(event: React.ChangeEvent) {
+  descriptionHandler(event: React.ChangeEvent): void {
     const element = event.target as HTMLInputElement;
     this.setState({ ...this.state, description: element.value });
   }
-  categoryHandler(event: React.ChangeEvent) {
+  categoryHandler(event: React.ChangeEvent): void {
     const element = event.target as HTMLInputElement;
     this.setState({ ...this.state, category: element.value });
   }

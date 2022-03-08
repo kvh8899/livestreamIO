@@ -243,7 +243,7 @@ class Controls extends Component<Props, State> {
       </OuterControls>
     );
   }
-  setPlayingToggle() {
+  setPlayingToggle(): void {
     const video = this.props.innerRef.current;
     this.setState({
       ...this.state,
@@ -256,7 +256,7 @@ class Controls extends Component<Props, State> {
       video.pause();
     }
   }
-  setPlayingTrue() {
+  setPlayingTrue(): void {
     const video = this.props.innerRef.current as HTMLVideoElement;
     this.setState({ ...this.state, isPlaying: true, children: [] });
     //set isDrag to false
@@ -265,7 +265,7 @@ class Controls extends Component<Props, State> {
     video.play();
   }
 
-  windowMouseMove(e: MouseEvent) {
+  windowMouseMove(e: MouseEvent): void {
     let video = this.props.innerRef.current as HTMLVideoElement;
     let width: number = (e.clientX / 685) * 12;
     let duration: number = video.duration;
@@ -276,7 +276,8 @@ class Controls extends Component<Props, State> {
     if (width <= duration) video.currentTime = width;
     if (bar && e.clientX - 15 <= 685) bar.style.width = e.clientX - 15 + "px";
   }
-  windowMouseUp(e: MouseEvent) {
+
+  windowMouseUp(e: MouseEvent): void {
     let video = this.props.innerRef.current as HTMLVideoElement;
     let current = this.props.controlShow.current as HTMLDivElement;
     let currentTime: number = video.currentTime;
