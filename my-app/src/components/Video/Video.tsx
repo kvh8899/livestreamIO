@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { Component, SyntheticEvent } from "react";
 import React from "react";
 import Controls from "./Controls";
 import styled from "styled-components";
@@ -25,7 +25,7 @@ class Video extends Component<{ height: string; width: string }> {
     this.setDragFalse = this.setDragFalse.bind(this);
     this.setDragTrue = this.setDragTrue.bind(this);
   }
-  state = { time: "0", isDrag: false };
+  state = { time: 0, isDrag: false };
   render() {
     return (
       <div
@@ -74,7 +74,7 @@ class Video extends Component<{ height: string; width: string }> {
       </div>
     );
   }
-  setTime(e: any) {
+  setTime(e: SyntheticEvent) {
     const target = e.target as HTMLVideoElement;
     this.setState({
       time: target.currentTime,
