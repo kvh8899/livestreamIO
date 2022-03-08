@@ -1,15 +1,18 @@
 import { Component } from "react";
 import { renderTime } from "../utils";
 import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPause, faPlay } from "@fortawesome/free-solid-svg-icons";
+import PlayButton from "../Button/PlayButton";
+import ReplayButton from "../Button/ReplayButton";
+import FullScreenButton from "../Button/FullScreenButton";
+import PauseAnimation from "../Animations/PauseAnimation";
+import PlayAnimation from "../Animations/PlayAnimation";
 import React from "react";
 const ControlContainer = styled.div`
   color: white;
   position: absolute;
   z-index: 25;
   bottom: 6px;
-  height: 100px;
+  height: 20%;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -29,18 +32,25 @@ const ControlContainer = styled.div`
     rgba(0, 0, 0, 0.01) 100%
   );
 `;
-const Play = styled.button`
-  border: none;
-  background-color: transparent;
-  height: 50px;
-  width: 50px;
-  cursor: pointer;
-  transition: 1s;
+const OuterControls = styled.div`
+  height: 100%;
+`;
+const BigToggle = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 const InnerControls = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
+  justify-content: space-between;
+  & > div {
+    display: flex;
+    align-items: center;
+  }
 `;
 const Progress = styled.div`
   position: relative;
@@ -50,119 +60,225 @@ const Progress = styled.div`
   height: 3px;
   display: flex;
   justify-content: flex-start;
+  user-select: none;
 `;
 type State = {
   isPlaying: boolean;
-  isDrag: boolean;
+  xPosition: number;
+  children: any;
 };
 type Props = {
   innerRef: any;
   time: any;
+  isDrag: boolean;
+  setDragFalse: any;
+  setDragTrue: any;
+  controlShow: any;
 };
 class Controls extends Component<Props, State> {
   private progressButton: React.RefObject<HTMLDivElement>;
   private progressBar: React.RefObject<HTMLDivElement>;
   constructor(props: any) {
     super(props);
-    this.toggle = this.toggle.bind(this);
+    this.setPlayingToggle = this.setPlayingToggle.bind(this);
+    this.setPlayingTrue = this.setPlayingTrue.bind(this);
+    this.windowMouseMove = this.windowMouseMove.bind(this);
+    this.windowMouseUp = this.windowMouseUp.bind(this);
     this.progressButton = React.createRef();
     this.progressBar = React.createRef();
   }
   state = {
     isPlaying: false,
-    isDrag: false,
+    xPosition: 0,
+    children: [],
   };
-
+  componentDidMount() {
+    window.addEventListener("mouseup", this.windowMouseUp);
+    window.addEventListener("mousemove", this.windowMouseMove);
+  }
+  componentWillUnmount() {
+    window.removeEventListener("mouseup", this.windowMouseUp);
+    window.removeEventListener("mousemove", this.windowMouseMove);
+  }
   render() {
     return (
-      <ControlContainer>
-        <Progress
-          onMouseOver={(e) => {
-            this.progressButton.current?.classList.add("hideProgress");
-            const element = e.currentTarget as HTMLElement;
-            element.style.height = "5px";
-            element.style.cursor = "pointer";
-          }}
-          onMouseLeave={(e) => {
-            if (!this.state.isDrag)
-              this.progressButton.current?.classList.remove("hideProgress");
-            const element = e.currentTarget as HTMLElement;
-            element.style.height = "3px";
-          }}
-          onMouseDown={(e) => {
-            this.setState({ ...this.state, isDrag: true });
-            const bar = this.progressBar.current;
-            if (bar) bar.style.width = e.clientX - 15 + "px";
-          }}
-          onMouseMove={(e) => {
-            if (!this.state.isDrag) return;
-            const bar = this.progressBar.current;
-            if (bar) bar.style.width = e.clientX - 15 + "px";
-          }}
+      <OuterControls>
+        <BigToggle
           onMouseUp={(e) => {
-            this.setState({ ...this.state, isDrag: false });
-            //set video playback to correct time
-            this.props.innerRef.current.currentTime = Math.ceil(
-              (e.clientX / 685) * 12
-            );
+            if (this.props.isDrag) {
+              this.setPlayingTrue();
+            }
+          }}
+          onClick={(e) => {
+            if (this.state.isPlaying) {
+              this.props.innerRef.current.pause();
+              this.setState({
+                ...this.state,
+                isPlaying: false,
+                children: <PauseAnimation></PauseAnimation>,
+              });
+            } else {
+              this.props.innerRef.current.play();
+              this.setState({
+                ...this.state,
+                isPlaying: true,
+                children: <PlayAnimation></PlayAnimation>,
+              });
+            }
           }}
         >
-          <div
-            style={{
-              backgroundColor: "red",
-              width: `${
-                !(
-                  this.props.time ===
-                  Math.floor(this.props.innerRef.current?.duration)
-                )
-                  ? (this.props.time / this.props.innerRef.current?.duration) *
-                    100
-                  : "100"
-              }%`,
-              height: "100%",
-              display: "flex",
-              justifyContent: "flex-end",
-              alignItems: "center",
-              position: "relative",
+          {this.state.children}
+        </BigToggle>
+        <ControlContainer>
+          <Progress
+            onMouseOver={(e) => {
+              this.progressButton.current?.classList.add("hideProgress");
+              const element = e.currentTarget as HTMLElement;
+              element.style.height = "5px";
+              element.style.cursor = "pointer";
             }}
-            ref={this.progressBar}
+            onMouseLeave={(e) => {
+              if (!this.props.isDrag)
+                this.progressButton.current?.classList.remove("hideProgress");
+              const element = e.currentTarget as HTMLElement;
+              element.style.height = "3px";
+            }}
+            onMouseDown={(e) => {
+              this.props.innerRef.current.pause();
+              let width = (e.clientX / 685) * 12;
+              let bar = this.progressBar.current;
+
+              this.props.innerRef.current.currentTime = width;
+              if (bar) bar.style.width = e.clientX - 15 + "px";
+              this.setState({
+                ...this.state,
+                xPosition: e.clientX - 15,
+              });
+              this.props.setDragTrue();
+            }}
+            onMouseMove={(e) => {
+              let width = (e.clientX / 685) * 12;
+              let bar = this.progressBar.current;
+
+              if (!this.props.isDrag) return;
+              this.props.innerRef.current.pause();
+
+              if (bar && e.clientX - 15 <= 685)
+                bar.style.width = e.clientX - 15 + "px";
+              this.props.innerRef.current.currentTime = width;
+            }}
+            onMouseUp={(e) => {
+              let width = (e.clientX / 685) * 12;
+              //set video playback to correct time
+              this.setState({
+                ...this.state,
+                isPlaying: true,
+                xPosition: width,
+              });
+              this.props.setDragFalse();
+              if (width <= 685) this.props.innerRef.current.currentTime = width;
+
+              this.props.innerRef.current.play();
+            }}
           >
-            <div ref={this.progressButton}></div>
-          </div>
-        </Progress>
-        <InnerControls>
-          <Play onClick={this.toggle}>
-            {!this.state.isPlaying ? (
-              <FontAwesomeIcon icon={faPlay} style={{ color: "white" }} />
-            ) : (
-              <FontAwesomeIcon icon={faPause} style={{ color: "white" }} />
-            )}
-          </Play>
-          <div>{renderTime(this.props.time)}</div>
-        </InnerControls>
-      </ControlContainer>
+            <div
+              style={{
+                backgroundColor: "red",
+                width: !this.props.isDrag
+                  ? `${
+                      !(
+                        this.props.time ===
+                        Math.floor(this.props.innerRef.current?.duration)
+                      )
+                        ? (this.props.time /
+                            this.props.innerRef.current?.duration) *
+                          685
+                        : "685"
+                    }px`
+                  : `${this.state.xPosition}px`,
+                height: "100%",
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+                position: "relative",
+              }}
+              ref={this.progressBar}
+            >
+              <div ref={this.progressButton}></div>
+            </div>
+          </Progress>
+          <InnerControls>
+            <div>
+              {this.props.innerRef.current?.currentTime ===
+              this.props.innerRef.current?.duration ? (
+                <ReplayButton
+                  setPlaying={this.setPlayingToggle}
+                  innerRef={this.props.innerRef}
+                />
+              ) : (
+                <PlayButton
+                  setPlaying={this.setPlayingToggle}
+                  setPlayingTrue={this.setPlayingTrue}
+                  isPlaying={this.state.isPlaying}
+                  innerRef={this.props.innerRef}
+                  isDrag={this.props.isDrag}
+                />
+              )}
+              <div
+                onMouseUp={(e) => {
+                  if (this.props.isDrag) this.setPlayingTrue();
+                }}
+              >
+                {renderTime(Math.floor(this.props.time))}
+              </div>
+            </div>
+            <div>
+              <FullScreenButton video={this.props.innerRef}></FullScreenButton>
+            </div>
+          </InnerControls>
+        </ControlContainer>
+      </OuterControls>
     );
   }
-
-  toggle(e: React.MouseEvent<HTMLButtonElement>) {
+  setPlayingToggle() {
+    this.setState({
+      ...this.state,
+      isPlaying: !this.state.isPlaying,
+      children: null,
+    });
     if (!this.state.isPlaying) {
       this.props.innerRef.current.play();
-      this.setState((state) => ({
-        isPlaying: true,
-      }));
     } else if (this.state.isPlaying) {
       this.props.innerRef.current.pause();
-      this.setState((state) => ({
-        isPlaying: false,
-      }));
     }
   }
-  returnElement(): any {
-    return (
-      <div>
-        <FontAwesomeIcon icon={faPause} />
-      </div>
-    );
+  setPlayingTrue() {
+    this.setState({ ...this.state, isPlaying: true, children: null });
+    //set isDrag to false
+    this.props.setDragFalse();
+    //play video
+    this.props.innerRef.current.play();
+  }
+
+  windowMouseMove(e: MouseEvent) {
+    let width = (e.clientX / 685) * 12;
+    let duration = this.props.innerRef.current.duration;
+    let bar = this.progressBar.current;
+
+    if (!this.props.isDrag) return;
+    this.props.innerRef.current.pause();
+    if (width <= duration) this.props.innerRef.current.currentTime = width;
+    if (bar && e.clientX - 15 <= 685) bar.style.width = e.clientX - 15 + "px";
+  }
+  windowMouseUp(e: MouseEvent) {
+    let current = this.props.controlShow.current;
+    let currentTime = this.props.innerRef.current.currentTime;
+    let duration = this.props.innerRef.current.duration;
+    this.setState({ ...this.state, isPlaying: true });
+    if (current) current.classList.remove("displayControls");
+    if (currentTime <= duration && this.props.isDrag)
+      this.props.innerRef.current.play();
+    this.props.setDragFalse();
   }
 }
 
