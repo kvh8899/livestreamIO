@@ -68,5 +68,9 @@ svg {
 }
 
 video {
-  object-fit: cover;
+  object-fit: fill;
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
 }

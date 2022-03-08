@@ -46,7 +46,7 @@ class Video extends Component<{ height: string; width: string }> {
         onMouseLeave={(e) => {
           if (this.state.isDrag) return;
           let current = this.controlShow.current;
-          
+          if (current) current.classList.remove("displayControls");
         }}
         onMouseUp={(e) => {
           e.stopPropagation();

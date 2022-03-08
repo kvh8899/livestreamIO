@@ -10,6 +10,7 @@ import React from "react";
 const ControlContainer = styled.div`
   color: white;
   position: relative;
+  bottom: 0;
   z-index: 25;
   bottom: 20%;
   height: 20%;
