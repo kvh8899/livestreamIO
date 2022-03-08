@@ -3,6 +3,7 @@ import { renderTime } from "../utils";
 import styled from "styled-components";
 import PlayButton from "../Button/PlayButton";
 import ReplayButton from "../Button/ReplayButton";
+import FullScreenButton from "../Button/FullScreenButton";
 import PauseAnimation from "../Animations/PauseAnimation";
 import PlayAnimation from "../Animations/PlayAnimation";
 import React from "react";
@@ -45,6 +46,11 @@ const InnerControls = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
+  justify-content: space-between;
+  & > div {
+    display: flex;
+    align-items: center;
+  }
 `;
 const Progress = styled.div`
   position: relative;
@@ -99,7 +105,7 @@ class Controls extends Component<Props, State> {
       <OuterControls>
         <BigToggle
           onMouseUp={(e) => {
-            if(this.props.isDrag){
+            if (this.props.isDrag) {
               this.setPlayingTrue();
             }
           }}
@@ -202,27 +208,32 @@ class Controls extends Component<Props, State> {
             </div>
           </Progress>
           <InnerControls>
-            {this.props.innerRef.current?.currentTime ===
-            this.props.innerRef.current?.duration ? (
-              <ReplayButton
-                setPlaying={this.setPlayingToggle}
-                innerRef={this.props.innerRef}
-              />
-            ) : (
-              <PlayButton
-                setPlaying={this.setPlayingToggle}
-                setPlayingTrue={this.setPlayingTrue}
-                isPlaying={this.state.isPlaying}
-                innerRef={this.props.innerRef}
-                isDrag={this.props.isDrag}
-              />
-            )}
-            <div
-              onMouseUp={(e) => {
-                if (this.props.isDrag) this.setPlayingTrue();
-              }}
-            >
-              {renderTime(Math.floor(this.props.time))}
+            <div>
+              {this.props.innerRef.current?.currentTime ===
+              this.props.innerRef.current?.duration ? (
+                <ReplayButton
+                  setPlaying={this.setPlayingToggle}
+                  innerRef={this.props.innerRef}
+                />
+              ) : (
+                <PlayButton
+                  setPlaying={this.setPlayingToggle}
+                  setPlayingTrue={this.setPlayingTrue}
+                  isPlaying={this.state.isPlaying}
+                  innerRef={this.props.innerRef}
+                  isDrag={this.props.isDrag}
+                />
+              )}
+              <div
+                onMouseUp={(e) => {
+                  if (this.props.isDrag) this.setPlayingTrue();
+                }}
+              >
+                {renderTime(Math.floor(this.props.time))}
+              </div>
+            </div>
+            <div>
+              <FullScreenButton video={this.props.innerRef}></FullScreenButton>
             </div>
           </InnerControls>
         </ControlContainer>

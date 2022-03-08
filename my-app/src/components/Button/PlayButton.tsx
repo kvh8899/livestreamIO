@@ -1,8 +1,7 @@
 import { Component, ReactNode } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPause, faPlay } from "@fortawesome/free-solid-svg-icons";
-import styled from "styled-components";
-
+import VideoControlButton from "./VideoControlButton";
 type Props = {
   innerRef: any;
   isPlaying: boolean;
@@ -10,14 +9,7 @@ type Props = {
   isDrag: boolean;
   setPlayingTrue: any;
 };
-const Play = styled.button`
-  border: none;
-  background-color: transparent;
-  height: 50px;
-  width: 50px;
-  cursor: pointer;
-  transition: 1s;
-`;
+
 class PlayButton extends Component<Props> {
   constructor(props: any) {
     super(props);
@@ -26,13 +18,13 @@ class PlayButton extends Component<Props> {
 
   render(): ReactNode {
     return (
-      <Play onMouseUp={this.toggle}>
+      <VideoControlButton onMouseUp={this.toggle}>
         {!this.props.isPlaying ? (
           <FontAwesomeIcon icon={faPlay} style={{ color: "white" }} />
         ) : (
           <FontAwesomeIcon icon={faPause} style={{ color: "white" }} />
         )}
-      </Play>
+      </VideoControlButton>
     );
   }
   toggle(e: React.MouseEvent<HTMLButtonElement>) {
