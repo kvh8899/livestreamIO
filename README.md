@@ -19,12 +19,15 @@ Features I am building right now:
 
 Video Component:
 
+(FullScreen Mode)
+
 ![](https://github.com/kvh8899/livestreamIO/blob/main/docs/fullscreen.png)
+
+(Regular)
 
 ![](https://github.com/kvh8899/livestreamIO/blob/main/docs/video.png)
 
 Codex is another project I worked on!
-
 Take a look [here](https://github.com/kvh8899/week13-project)
 
 Drag and Drop uploading to AWS:
