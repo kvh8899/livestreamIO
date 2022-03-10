@@ -265,7 +265,6 @@ class Controls extends Component<Props, State> {
 
   windowMouseMove(e: MouseEvent): void {
     if (!this.props.isDrag) return;
-
     let video = this.props.innerRef.current as HTMLVideoElement;
     let progress = this.fullBar.current as HTMLDivElement;
     let width: number = (e.clientX - 15) / progress.clientWidth;
