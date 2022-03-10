@@ -11,7 +11,9 @@ Features:
 Features I am building right now:
 - volume controls
 - Safari support (Fullscreen API doesnt like Safari :/)
-- 
+
 
 ![](https://github.com/kvh8899/livestreamIO/blob/main/docs/fullscreen.png)
+
+![](https://github.com/kvh8899/livestreamIO/blob/main/docs/video.png)
 
