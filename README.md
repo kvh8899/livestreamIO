@@ -6,6 +6,9 @@ Twitch is my favorite app so I decided to start figuring out how to make somethi
 
 Currently working on the video component
 
+Frontend: Typescript/React 
+Backend: Express, PostgreSQL, Node
+
 Features:
 - Fullscreen
 - Play or Pause the video either by clicking the video or the Play/Pause buttons
