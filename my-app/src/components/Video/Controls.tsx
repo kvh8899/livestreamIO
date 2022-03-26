@@ -69,7 +69,6 @@ const ScrubAndControls = styled.div`
   margin: 0px 15px;
 `;
 type State = {
-  isPlaying: boolean;
   xPosition: number;
   children: object;
 };
@@ -82,6 +81,8 @@ type Props = {
   controlShow: React.RefObject<HTMLDivElement>;
   isFullScreen: boolean;
   setFullScreen: VoidFunction;
+  isPlaying: boolean;
+  setPlaying: any;
 };
 class Controls extends Component<Props, State> {
   private progressButton: React.RefObject<HTMLDivElement>;
@@ -98,7 +99,6 @@ class Controls extends Component<Props, State> {
     this.fullBar = React.createRef();
   }
   state = {
-    isPlaying: false,
     xPosition: 0,
     children: [],
   };
@@ -110,31 +110,28 @@ class Controls extends Component<Props, State> {
     window.removeEventListener("mousemove", this.windowMouseMove);
     window.removeEventListener("mouseup", this.windowMouseUp);
   }
+
   render() {
+    console.log(this.props.isPlaying);
     return (
       <OuterControls>
         <BigToggle
-          onMouseUp={(e) => {
-            if (this.props.isDrag) {
-              this.setPlayingTrue();
-            }
-          }}
           onClick={(e) => {
             const video = this.props.innerRef.current as HTMLVideoElement;
-            if (this.state.isPlaying) {
+            if (this.props.isPlaying) {
               video.pause();
               this.setState({
                 ...this.state,
-                isPlaying: false,
                 children: <PauseAnimation></PauseAnimation>,
               });
+              this.props.setPlaying(false);
             } else {
               video.play();
               this.setState({
                 ...this.state,
-                isPlaying: true,
                 children: <PlayAnimation></PlayAnimation>,
               });
+              this.props.setPlaying(true);
             }
           }}
         >
@@ -168,10 +165,8 @@ class Controls extends Component<Props, State> {
                 });
                 this.props.setDragTrue();
               }}
-              onMouseUp={(e) => {
-                if (!this.props.isDrag) return;
-                this.setState({ ...this.state, isPlaying: true });
-                this.props.setDragFalse();
+              onClick={(e) => {
+                this.props.setPlaying(true);
               }}
             >
               <div
@@ -215,18 +210,12 @@ class Controls extends Component<Props, State> {
                   <PlayButton
                     setPlaying={this.setPlayingToggle}
                     setPlayingTrue={this.setPlayingTrue}
-                    isPlaying={this.state.isPlaying}
+                    isPlaying={this.props.isPlaying}
                     innerRef={this.props.innerRef}
                     isDrag={this.props.isDrag}
                   />
                 )}
-                <div
-                  onMouseUp={(e) => {
-                    if (this.props.isDrag) this.setPlayingTrue();
-                  }}
-                >
-                  {renderTime(Math.floor(this.props.time))}
-                </div>
+                <div>{renderTime(Math.floor(this.props.time))}</div>
               </div>
               <div>
                 <FullScreenButton
@@ -245,18 +234,19 @@ class Controls extends Component<Props, State> {
 
     this.setState({
       ...this.state,
-      isPlaying: !this.state.isPlaying,
       children: [],
     });
-    if (!this.state.isPlaying && video) {
+    this.props.setPlaying(!this.props.isPlaying);
+    if (!this.props.isPlaying && video) {
       video.play();
-    } else if (this.state.isPlaying && video) {
+    } else if (this.props.isPlaying && video) {
       video.pause();
     }
   }
   setPlayingTrue(): void {
     const video = this.props.innerRef.current as HTMLVideoElement;
-    this.setState({ ...this.state, isPlaying: true, children: [] });
+    this.setState({ ...this.state, children: [] });
+    this.props.setPlaying(true);
     //set isDrag to false
     this.props.setDragFalse();
     //play video
@@ -280,7 +270,7 @@ class Controls extends Component<Props, State> {
     let progress = this.fullBar.current as HTMLDivElement;
     let width: number = (e.clientX - 15) / progress.clientWidth;
     let duration: number = video.duration;
-    this.setState({ ...this.state, isPlaying: true });
+    this.props.setPlaying(true);
     this.props.setDragFalse();
     if (width * duration <= duration) video.play();
   }

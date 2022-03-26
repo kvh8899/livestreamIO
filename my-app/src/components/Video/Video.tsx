@@ -25,12 +25,18 @@ class Video extends Component<{ height: string; width: string }> {
     this.setDragFalse = this.setDragFalse.bind(this);
     this.setDragTrue = this.setDragTrue.bind(this);
     this.setFullScreenState = this.setFullScreenState.bind(this);
+    this.setPlaying = this.setPlaying.bind(this);
+    this.clearControls = this.clearControls.bind(this);
   }
   state = {
     time: 0,
     isDrag: false,
     isFullScreen: false,
+    isPlaying: false,
+    clearControls: false,
+    timer: setTimeout(() => {}, 0),
   };
+
   render() {
     return (
       <div
@@ -40,17 +46,30 @@ class Video extends Component<{ height: string; width: string }> {
           position: "relative",
         }}
         onMouseOver={(e) => {
-          let current = this.controlShow.current;
+          const current = this.controlShow.current as HTMLDivElement;
           if (current) current.classList.add("displayControls");
+          if (this.state.isPlaying) this.clearControls(current);
         }}
         onMouseLeave={(e) => {
           if (this.state.isDrag) return;
-          let current = this.controlShow.current;
-          if (current) current.classList.remove("displayControls");
+          const current = this.controlShow.current;
+          clearTimeout(this.state.timer);
+          if (current && this.state.isPlaying)
+            current.classList.remove("displayControls");
         }}
         onMouseUp={(e) => {
           e.stopPropagation();
-          if (this.state.isDrag) this.video.current?.play();
+          const current = this.controlShow.current as HTMLDivElement;
+          if (this.state.isDrag) {
+            this.video.current?.play();
+            this.setPlaying(true);
+          }
+          if (!this.state.isPlaying) {
+            this.clearControls(current);
+          } else if (this.state.isPlaying) {
+            clearTimeout(this.state.timer);
+            current.classList.add("displayControls");
+          }
           this.setDragFalse();
         }}
       >
@@ -76,6 +95,8 @@ class Video extends Component<{ height: string; width: string }> {
             controlShow={this.controlShow}
             isFullScreen={this.state.isFullScreen}
             setFullScreen={this.setFullScreenState}
+            isPlaying={this.state.isPlaying}
+            setPlaying={this.setPlaying}
           />
         </ControlWrapper>
       </div>
@@ -96,6 +117,19 @@ class Video extends Component<{ height: string; width: string }> {
 
   setFullScreenState(): void {
     this.setState({ ...this.state, isFullScreen: !this.state.isFullScreen });
+  }
+
+  setPlaying(setTo: boolean): void {
+    this.setState({ ...this.state, isPlaying: setTo });
+  }
+  clearControls(current: HTMLDivElement): void {
+    clearTimeout(this.state.timer);
+    this.setState({
+      ...this.state,
+      timer: setTimeout(() => {
+        if (current) current.classList.remove("displayControls");
+      }, 2000),
+    });
   }
 }
 
