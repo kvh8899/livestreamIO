@@ -83,6 +83,7 @@ type Props = {
   setFullScreen: VoidFunction;
   isPlaying: boolean;
   setPlaying: any;
+  timer: any;
 };
 class Controls extends Component<Props, State> {
   private progressButton: React.RefObject<HTMLDivElement>;
@@ -112,7 +113,6 @@ class Controls extends Component<Props, State> {
   }
 
   render() {
-    console.log(this.props.isPlaying);
     return (
       <OuterControls>
         <BigToggle
@@ -163,7 +163,12 @@ class Controls extends Component<Props, State> {
                   ...this.state,
                   xPosition: width * 100,
                 });
+                this.props.setPlaying(false);
                 this.props.setDragTrue();
+                clearTimeout(this.props.timer);
+              }}
+              onMouseUp={(e) => {
+                this.props.setPlaying(true);
               }}
               onClick={(e) => {
                 this.props.setPlaying(true);

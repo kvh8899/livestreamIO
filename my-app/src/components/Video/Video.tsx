@@ -97,6 +97,7 @@ class Video extends Component<{ height: string; width: string }> {
             setFullScreen={this.setFullScreenState}
             isPlaying={this.state.isPlaying}
             setPlaying={this.setPlaying}
+            timer={this.state.timer}
           />
         </ControlWrapper>
       </div>
@@ -109,10 +110,10 @@ class Video extends Component<{ height: string; width: string }> {
     });
   }
   setDragFalse(): void {
-    this.setState({ ...this.state, isDrag: false });
+    this.setState((state, props) => ({ ...state, isDrag: false }));
   }
   setDragTrue(): void {
-    this.setState({ ...this.state, isDrag: true });
+    this.setState((state, props) => ({ ...state, isDrag: true }));
   }
 
   setFullScreenState(): void {
@@ -120,7 +121,7 @@ class Video extends Component<{ height: string; width: string }> {
   }
 
   setPlaying(setTo: boolean): void {
-    this.setState({ ...this.state, isPlaying: setTo });
+    this.setState((state, props) => ({ ...this.state, isPlaying: setTo }));
   }
   clearControls(current: HTMLDivElement): void {
     clearTimeout(this.state.timer);
