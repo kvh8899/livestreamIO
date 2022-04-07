@@ -27,6 +27,7 @@ class Video extends Component<{ height: string; width: string }> {
     this.setDragTrue = this.setDragTrue.bind(this);
     this.setFullScreenState = this.setFullScreenState.bind(this);
     this.setPlaying = this.setPlaying.bind(this);
+    this.timer = [];
   }
   state = {
     time: 0,
@@ -47,11 +48,11 @@ class Video extends Component<{ height: string; width: string }> {
         }}
         onMouseMove={(e) => {
           const current = this.controlRef.current;
-          clearTimeout(this.timer);
+          clearTimeout(this.timer[0]);
           if (current) current.classList.add("displayControls");
-          this.timer = setTimeout(() => {
+          this.timer[0] = (setTimeout(() => {
             if (current) current.classList.remove("displayControls");
-          }, 2000);
+          }, 2000));
         }}
         onMouseLeave={(e) => {}}
         onMouseUp={(e) => {
@@ -60,21 +61,15 @@ class Video extends Component<{ height: string; width: string }> {
             const video = this.video.current;
             if (video) video.play();
           }
-          this.setState((state, props) => {
-            return {
-              ...state,
-              controlShow: true,
-            };
-          });
           this.setDragFalse();
           const current = this.controlRef.current;
-          clearTimeout(this.timer);
+          clearTimeout(this.timer[0]);
           if (current && this.state.isPlaying){
             current.classList.add("displayControls");
           }else if(!this.state.isPlaying){
-            this.timer = setTimeout(() => {
+            this.timer[0] = (setTimeout(() => {
               if (current) current.classList.remove("displayControls");
-            }, 2000);
+            }, 2000));
           }
         }}
       >
@@ -102,6 +97,7 @@ class Video extends Component<{ height: string; width: string }> {
             setFullScreen={this.setFullScreenState}
             isPlaying={this.state.isPlaying}
             setPlaying={this.setPlaying}
+            timer={this.timer}
           />
         </ControlWrapper>
       </div>
