@@ -83,7 +83,7 @@ type Props = {
   setFullScreen: VoidFunction;
   isPlaying: boolean;
   setPlaying: any;
-  timer:any;
+  timer: any;
 };
 class Controls extends Component<Props, State> {
   private progressButton: React.RefObject<HTMLDivElement>;
@@ -135,12 +135,22 @@ class Controls extends Component<Props, State> {
             }
           }}
           onMouseMove={(e) => {
+            if (!this.props.isPlaying) return;
             const current = this.props.controlRef.current;
             clearTimeout(this.props.timer[0]);
             if (current) current.classList.add("displayControls");
             this.props.timer[0] = setTimeout(() => {
               if (current) current.classList.remove("displayControls");
             }, 2000);
+          }}
+          onMouseUp={(e) => {
+            const current = this.props.controlRef.current;
+            console.log(this.props.isPlaying)
+            if (!this.props.isPlaying) {
+              this.props.timer[0] = setTimeout(() => {
+                if (current) current.classList.remove("displayControls");
+              }, 2000);
+            }
           }}
         >
           {this.state.children}

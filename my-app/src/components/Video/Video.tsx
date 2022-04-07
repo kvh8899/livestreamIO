@@ -47,14 +47,15 @@ class Video extends Component<{ height: string; width: string }> {
           position: "relative",
         }}
         onMouseMove={(e) => {
+          
+          if (!this.state.isPlaying) return;
           const current = this.controlRef.current;
           clearTimeout(this.timer[0]);
           if (current) current.classList.add("displayControls");
-          this.timer[0] = (setTimeout(() => {
+          this.timer[0] = setTimeout(() => {
             if (current) current.classList.remove("displayControls");
-          }, 2000));
+          }, 2000);
         }}
-        onMouseLeave={(e) => {}}
         onMouseUp={(e) => {
           if (this.state.isDrag) {
             this.setPlaying(true);
@@ -63,13 +64,8 @@ class Video extends Component<{ height: string; width: string }> {
           }
           this.setDragFalse();
           const current = this.controlRef.current;
-          clearTimeout(this.timer[0]);
-          if (current && this.state.isPlaying){
+          if (current && this.state.isPlaying) {
             current.classList.add("displayControls");
-          }else if(!this.state.isPlaying){
-            this.timer[0] = (setTimeout(() => {
-              if (current) current.classList.remove("displayControls");
-            }, 2000));
           }
         }}
       >
