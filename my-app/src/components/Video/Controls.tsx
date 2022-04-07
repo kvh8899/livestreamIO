@@ -78,12 +78,11 @@ type Props = {
   isDrag: boolean;
   setDragFalse: VoidFunction;
   setDragTrue: VoidFunction;
-  controlShow: React.RefObject<HTMLDivElement>;
+  controlRef: React.RefObject<HTMLDivElement>;
   isFullScreen: boolean;
   setFullScreen: VoidFunction;
   isPlaying: boolean;
   setPlaying: any;
-  timer: any;
 };
 class Controls extends Component<Props, State> {
   private progressButton: React.RefObject<HTMLDivElement>;
@@ -162,13 +161,9 @@ class Controls extends Component<Props, State> {
                 this.setState({
                   ...this.state,
                   xPosition: width * 100,
+                  children: <div></div>,
                 });
-                this.props.setPlaying(false);
                 this.props.setDragTrue();
-                clearTimeout(this.props.timer);
-              }}
-              onMouseUp={(e) => {
-                this.props.setPlaying(true);
               }}
               onClick={(e) => {
                 this.props.setPlaying(true);
@@ -250,7 +245,7 @@ class Controls extends Component<Props, State> {
   }
   setPlayingTrue(): void {
     const video = this.props.innerRef.current as HTMLVideoElement;
-    this.setState({ ...this.state, children: [] });
+    this.setState((state, props) => ({ ...this.state, children: [] }));
     this.props.setPlaying(true);
     //set isDrag to false
     this.props.setDragFalse();
